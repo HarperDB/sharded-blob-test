@@ -1,0 +1,19 @@
+type Shardnado @table(database: "shard", expiration: 604800) @sealed @export{
+	cacheKey: ID @primaryKey
+
+	lastAccessedTimestamp: String
+
+	htmlContent: Blob!
+
+	encoding: String
+
+	ipsumTtl: Int
+
+	ttl: Int
+
+	expiresAtTimestamp: String!
+
+	contentSize: Int
+
+	httpStatus: Int
+}
