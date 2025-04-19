@@ -13,7 +13,7 @@ type Shardnado @table(database: "shard", expiration: 604800) @sealed @export{
 
 	expiresAtTimestamp: String!
 
-	updatedTimestamp: String
+	updatedTimestamp: Date @indexed
 
 	contentSize: Int
 
