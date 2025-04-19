@@ -21,13 +21,13 @@ const HEADERS = {Accept: "*/*", Authorization: BASIC_AUTH, 'Cache-Control': 'no-
 const MAX_VUS = 10000;
 
 const STAGES = [
-  { target: TARGET, duration: '1m' },
-  //{ target: TARGET, duration: DURATION }
+  { target: TARGET, duration: '5m' },
+  { target: TARGET, duration: DURATION }
 ];
 
 export let options = {
   tags: {
-    testid: `SingleWriterResidency-${TARGET}-${DURATION}-${new Date().toUTCString()}`,
+    testid: `LeaderWriterResidency-${TARGET}-${DURATION}-${new Date().toUTCString()}`,
   },
   setupTimeout: '900s',
   discardResponseBodies: false,

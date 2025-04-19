@@ -14,8 +14,8 @@ Shardnado.setResidency((record ) => {
 
 export class shardcount extends Shardnado {
   async get(id) {
-    const results = Shardnado.search({select: ['cacheKey'], conditions: [
-        { attribute: 'updatedTimestamp', comparator: 'greater_than', value: id }
+    const results = await Shardnado.search({select: ['cacheKey'], conditions: [
+        { attribute: 'updatedTimestamp', comparator: 'greater_than', value: this.getId() }
       ]});
     let count = 0;
     for await(const entry of  results) {
