@@ -5,8 +5,8 @@ const TTL = 4 * 30 * 24 * 60 * 60 * 1000;
 const {Shardnado} = databases.shard;
 
 //sample id: itemId=10052100863&deviceType=desktop&upstream=www.walmart.com
-Shardnado.setResidency((record ) => {
-  let matchId = record.cacheKey.match(/itemId=([\d.]+)/);
+Shardnado.setResidencyById((id ) => {
+  let matchId = id.match(/itemId=([\d.]+)/);
   //create a partition of 1-10 based on itemid last digit
   //return Math.round(((matchId[1] % 10) +1) / 2);
   return (matchId[1] % 10) +1;

@@ -10,7 +10,7 @@ let trendCacheMiss = new Trend("trendCacheMiss", true);
 
 const shardCounter = new Counter('shardCounter', {});
 
-const DOMAIN = "https://shard-nado-us-lax{SN}.harperdbcloud.com";
+const DOMAIN = __ENV.DOMAIN ? __ENV.DOMAIN : "http://localhost";
 const BASIC_AUTH = __ENV.BASIC_AUTH ? __ENV.BASIC_AUTH : "Basic SERCX0FETUlOOjE0MDA=";
 const HTTP_PORT = __ENV.HTTP_PORT ? __ENV.HTTP_PORT : 9926;
 const TARGET = __ENV.TARGET ? __ENV.TARGET : 1000;
@@ -27,7 +27,7 @@ const STAGES = [
 
 export let options = {
   tags: {
-    testid: `MultiWriterResidency-${TARGET}-${DURATION}-${Date.now()}`,
+    testid: `LeaderWriterResidencyById-${TARGET}-${DURATION}-${Date.now()}`,
   },
   setupTimeout: '900s',
   discardResponseBodies: false,
@@ -46,14 +46,13 @@ export let options = {
 export function hdb(data) {
   callHDB(data, DOMAIN);
 }
-
+let iterationCount = 0;
 function callHDB(data, domain) {
-  let [id, shardNumber] = generateId(data);
+  let id = generateId(data);
 
-  let request_url = `${domain.replace('{SN}', shardNumber)}:${HTTP_PORT}/shardnado/${id}`;
-
+  let request_url = `${domain}:${HTTP_PORT}/shardnado/${id}`;
   const res = http.get(request_url, { headers: HEADERS,
-    tags: { name: 'Harper', shardNumber} });
+    tags: { name: 'Harper'} });
 
   let serverTimingHeader = res.headers["Server-Timing"];
   let timings = serverTimingHeader.split(",");
@@ -82,7 +81,6 @@ function callHDB(data, domain) {
 function generateId(data) {
   let itemId = exec.scenario.iterationInTest + exec.vu.idInTest;
   let shardNumber = (itemId % 10) +1
-  shardNumber = shardNumber < 10 ? '0' + shardNumber : shardNumber;
   shardCounter.add(1, { shard: shardNumber });
-  return [`startTime=${exec.scenario.startTime}&vuId=${exec.vu.idInTest}&itemId=${itemId}`, shardNumber];
+  return `startTime=${exec.scenario.startTime}&vuId=${exec.vu.idInTest}&itemId=${itemId}`
 }
