@@ -2,11 +2,11 @@ import { randomBytes } from 'crypto';
 let random = randomBytes(215000);
 const TTL = 4 * 30 * 24 * 60 * 60 * 1000;
 
-const {Shardnado} = databases.shard;
+const {Shardnado, BlobData, ByteData} = databases.shard;
 
 //sample id: itemId=10052100863&deviceType=desktop&upstream=www.walmart.com
-Shardnado.setResidencyById((id ) => {
-  let matchId = id.match(/itemId=([\d.]+)/);
+Shardnado.setResidency((record ) => {
+  let matchId = record.cacheKey.match(/itemId=([\d.]+)/);
   //create a partition of 1-10 based on itemid last digit
   //return Math.round(((matchId[1] % 10) +1) / 2);
   return (matchId[1] % 10) +1;
@@ -58,3 +58,71 @@ export class ShardSource extends Resource {
 }
 
 shardnado.sourcedFrom(ShardSource);
+
+export class blobdata extends BlobData {
+  async get() {
+    return {
+      status: this.httpStatus,
+      headers: {},
+      body: this.htmlContent
+    };
+  }
+}
+
+export class BlobSource extends Resource {
+  async get() {
+    const expiresAt = Date.now() + TTL;
+    const context = this.getContext();
+    context.expiresAt = expiresAt;
+
+    let blob = await createBlob(random.subarray(0,
+      Math.floor(Math.random() * (215000 - 150000 + 1)) + 150000
+    ));
+
+    return {
+      htmlContent: blob,
+      encoding: "gzip",
+      contentSize: blob.size,
+      ttl: TTL,
+      expiresAtTimestamp: new Date(expiresAt).toISOString(),
+      updatedTimestamp: new Date(),
+      httpStatus: 200
+    }
+  }
+}
+
+blobdata.sourcedFrom(BlobData);
+
+export class bytedata extends ByteData {
+  async get() {
+    return {
+      status: this.httpStatus,
+      headers: {},
+      body: this.htmlContent
+    };
+  }
+}
+
+export class ByteSource extends Resource {
+  async get() {
+    const expiresAt = Date.now() + TTL;
+    const context = this.getContext();
+    context.expiresAt = expiresAt;
+
+    let bytes = random.subarray(0,
+      Math.floor(Math.random() * (215000 - 150000 + 1)) + 150000
+    );
+
+    return {
+      htmlContent: blob,
+      encoding: "gzip",
+      contentSize: bytes,
+      ttl: TTL,
+      expiresAtTimestamp: new Date(expiresAt).toISOString(),
+      updatedTimestamp: new Date(),
+      httpStatus: 200
+    }
+  }
+}
+
+bytedata.sourcedFrom(ByteSource);
