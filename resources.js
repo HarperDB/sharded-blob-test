@@ -91,7 +91,7 @@ export class BlobSource extends Resource {
   }
 }
 
-blobdata.sourcedFrom(BlobData);
+blobdata.sourcedFrom(BlobSource);
 
 export class bytedata extends ByteData {
   async get() {
