@@ -5,13 +5,27 @@ const TTL = 4 * 30 * 24 * 60 * 60 * 1000;
 const {Shardnado, BlobData, ByteData} = databases.shard;
 
 //sample id: itemId=10052100863&deviceType=desktop&upstream=www.walmart.com
+/**
+ * Extracts the item ID from the `cacheKey` in the provided record and calculates a partition value
+ * based on the last digit of the item ID.
+ *
+ * @param {Object} record - The object containing the `cacheKey` string property.
+ * @param {string} record.cacheKey - String that contains the item ID within it.
+ * @returns {number} The partition value derived from the last digit of the item ID.
+ */
 Shardnado.setResidency((record ) => {
   let matchId = record.cacheKey.match(/itemId=([\d.]+)/);
-  //create a partition of 1-10 based on itemid last digit
-  //return Math.round(((matchId[1] % 10) +1) / 2);
   return (matchId[1] % 10) +1;
 });
 
+/*Shardnado.setResidencyId((id ) => {
+  let matchId = id.match(/itemId=([\d.]+)/);
+  //create a partition of 1-10 based on itemid last digit
+  //return Math.round(((matchId[1] % 10) +1) / 2);
+  return (matchId[1] % 10) +1;
+});*/
+
+//
 export class shardcount extends Shardnado {
   async get(id) {
     const results = await Shardnado.search({select: ['cacheKey'], conditions: [
