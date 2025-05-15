@@ -14,19 +14,18 @@ const {Shardnado, BlobData, ByteData} = databases.shard;
  * @returns {number} The partition value derived from the last digit of the item ID.
  */
 
-/*
 Shardnado.setResidency((record ) => {
   let matchId = record.cacheKey.match(/itemId=([\d.]+)/);
   return (matchId[1] % 10) +1;
 });
- */
 
-Shardnado.setResidencyById((id ) => {
+/*Shardnado.setResidencyById((id ) => {
   let matchId = id.match(/itemId=([\d.]+)/);
   //create a partition of 1-10 based on itemid last digit
   //return Math.round(((matchId[1] % 10) +1) / 2);
   return (matchId[1] % 10) +1;
 });
+*/
 
 //
 export class shardcount extends Shardnado {
