@@ -21,7 +21,7 @@ Shardnado.setResidency((record ) => {
 });
  */
 
-Shardnado.setResidencyId((id ) => {
+Shardnado.setResidencyById((id ) => {
   let matchId = id.match(/itemId=([\d.]+)/);
   //create a partition of 1-10 based on itemid last digit
   //return Math.round(((matchId[1] % 10) +1) / 2);
