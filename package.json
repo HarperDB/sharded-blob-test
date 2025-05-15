@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "sharded-blob-test",
-  "version": "1.0.5",
+  "version": "1.0.5-setResidency",
   "description": "",
   "main": "resources.js",
   "scripts": {
