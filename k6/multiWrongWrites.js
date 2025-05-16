@@ -20,7 +20,7 @@ const MAX_VUS = 10000;
 
 const STAGES = [
   { target: TARGET, duration: '5m' },
-  //{ target: TARGET, duration: DURATION }
+  { target: TARGET, duration: DURATION }
 ];
 
 export let options = {

@@ -130,9 +130,9 @@ export class ByteSource extends Resource {
     );
 
     return {
-      htmlContent: blob,
+      htmlContent: bytes,
       encoding: "gzip",
-      contentSize: bytes,
+      contentSize: bytes.size,
       ttl: TTL,
       expiresAtTimestamp: new Date(expiresAt).toISOString(),
       updatedTimestamp: new Date(),
