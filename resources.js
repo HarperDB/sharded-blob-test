@@ -1,6 +1,14 @@
 import { randomBytes } from 'crypto';
-let random = randomBytes(215000);
+
 const TTL = 4 * 30 * 24 * 60 * 60 * 1000;
+
+const minSize = 800;
+const maxSize = 1300;
+let random = randomBytes(maxSize);
+
+const noOfHarperNodes = 5;        //cluster has 5 harperdb nodes (shard 2,3,4,5,6)
+const firstHarperNodeNumber = 2;  //first node is shard 2
+
 
 const {Shardnado, BlobData, ByteData} = databases.shard;
 
@@ -16,14 +24,14 @@ const {Shardnado, BlobData, ByteData} = databases.shard;
 
 Shardnado.setResidency((record ) => {
   let matchId = record.cacheKey.match(/itemId=([\d.]+)/);
-  return (matchId[1] % 10) +1;
+  return (matchId[1] % noOfHarperNodes) + firstHarperNodeNumber;
 });
 
 /*Shardnado.setResidencyById((id ) => {
   let matchId = id.match(/itemId=([\d.]+)/);
   //create a partition of 1-10 based on itemid last digit
   //return Math.round(((matchId[1] % 10) +1) / 2);
-  return (matchId[1] % 10) +1;
+  return (matchId[1] % noOfHarperNodes) + firstHarperNodeNumber;
 });
 */
 
@@ -58,7 +66,7 @@ export class ShardSource extends Resource {
     context.expiresAt = expiresAt;
 
     let blob = await createBlob(random.subarray(0,
-      Math.floor(Math.random() * (215000 - 150000 + 1)) + 150000
+      Math.floor(Math.random() * (maxSize - minSize + 1)) + minSize
     ));
 
     return {
@@ -92,7 +100,7 @@ export class BlobSource extends Resource {
     context.expiresAt = expiresAt;
 
     let blob = await createBlob(random.subarray(0,
-      Math.floor(Math.random() * (215000 - 150000 + 1)) + 150000
+      Math.floor(Math.random() * (maxSize - minSize + 1)) + minSize
     ));
 
     return {
@@ -126,7 +134,7 @@ export class ByteSource extends Resource {
     context.expiresAt = expiresAt;
 
     let bytes = random.subarray(0,
-      Math.floor(Math.random() * (215000 - 150000 + 1)) + 150000
+      Math.floor(Math.random() * (maxSize - minSize + 1)) + minSize
     );
 
     return {
