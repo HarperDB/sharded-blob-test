@@ -6,8 +6,8 @@ const minSize = 800;
 const maxSize = 1300;
 let random = randomBytes(maxSize);
 
-const noOfHarperNodes = 5;        //cluster has 5 harperdb nodes (shard 2,3,4,5,6)
-const firstHarperNodeNumber = 2;  //first node is shard 2
+const noOfHarperNodes = 10;        //cluster has 10 harperdb nodes (shard 1, 2 ... 10)
+const firstHarperNodeNumber = 1;  //first node is shard 1
 
 
 const {Shardnado, BlobData, ByteData} = databases.shard;
