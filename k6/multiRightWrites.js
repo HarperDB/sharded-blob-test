@@ -18,10 +18,10 @@ const DURATION = __ENV.DURATION ? __ENV.DURATION : '10m';
 
 const HEADERS = {Accept: "*/*", Authorization: BASIC_AUTH, 'Cache-Control': 'no-cache'}
 
-const MAX_VUS = 10000;
+const MAX_VUS = 90000;
 
 const STAGES = [
-  { target: TARGET, duration: '5m' },
+  { target: TARGET, duration: '10m' },
   { target: TARGET, duration: DURATION }
 ];
 

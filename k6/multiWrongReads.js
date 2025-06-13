@@ -21,11 +21,11 @@ const DURATION = __ENV.DURATION ? __ENV.DURATION : '10m';
 
 const HEADERS = {Accept: "*/*", Authorization: BASIC_AUTH, 'Cache-Control': 'only-if-cached'}
 
-const MAX_VUS = 10000;
+const MAX_VUS = 90000;
 
 const STAGES = [
-  { target: TARGET, duration: '1m' },
-  //{ target: TARGET, duration: DURATION }
+  { target: TARGET, duration: '10m' },
+  { target: TARGET, duration: DURATION }
 ];
 
 export let options = {
@@ -57,8 +57,8 @@ function callHDB(domain) {
 
   const randomNumber = getRandomNumberExcludingOne(shardNumber);
   //determine appropriate shard number
-console.log(id, shardNumber, randomNumber);
-const num = randomNumber < 10 ? '0' + randomNumber : randomNumber;
+  //console.log(id, shardNumber, randomNumber);
+  const num = randomNumber < 10 ? '0' + randomNumber : randomNumber;
   let request_url = `${domain.replace('{SN}', num)}:${HTTP_PORT}/shardnado/${id}`;
 
   const res = http.get(request_url, { headers: HEADERS,

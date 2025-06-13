@@ -8,7 +8,7 @@ import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.2/index.js';
 let trendHDB = new Trend("trendHDB", true);
 let trendCacheMiss = new Trend("trendCacheMiss", true);
 
-const DOMAIN = __ENV.DOMAIN ? __ENV.DOMAIN : "http://localhost";
+const DOMAIN = "https://shard-nado-us-lax{SN}.harperdbcloud.com";
 const BASIC_AUTH = __ENV.BASIC_AUTH ? __ENV.BASIC_AUTH : "Basic SERCX0FETUlOOjE0MDA=";
 const HTTP_PORT = __ENV.HTTP_PORT ? __ENV.HTTP_PORT : 9926;
 const TARGET = __ENV.TARGET ? __ENV.TARGET : 1000;
@@ -16,10 +16,10 @@ const DURATION = __ENV.DURATION ? __ENV.DURATION : '10m';
 
 const HEADERS = {Accept: "*/*", Authorization: BASIC_AUTH, 'Cache-Control': 'no-cache'}
 
-const MAX_VUS = 10000;
+const MAX_VUS = 90000;
 
 const STAGES = [
-  { target: TARGET, duration: '5m' },
+  { target: TARGET, duration: '10m' },
   { target: TARGET, duration: DURATION }
 ];
 
@@ -44,11 +44,17 @@ export let options = {
 export function hdb(data) {
   callHDB(data, DOMAIN);
 }
-let iterationCount = 0;
+
 function callHDB(data, domain) {
   let id = generateId(data);
 
-  let request_url = `${domain}:${HTTP_PORT}/shardnado/${id}`;
+  const matchId = id.match(/itemId=([\d.]+)/);
+  const shardNumber = (matchId[1] % 10) + 1; // 10 nodes cluster
+  const randomNumber = getRandomNumberExcludingOne(shardNumber);
+
+  const num = randomNumber < 10 ? '0' + randomNumber : randomNumber;
+  let request_url = `${domain.replace('{SN}', num)}:${HTTP_PORT}/shardnado/${id}`;
+
   const res = http.get(request_url, { headers: HEADERS,
     tags: { name: 'Harper'} });
 
@@ -77,5 +83,13 @@ function callHDB(data, domain) {
 }
 
 function generateId(data) {
-  return `startTime=${exec.scenario.startTime}&vuId=${exec.vu.idInTest}&itemId=${randomIntBetween(1, 100)}`
+  return `startTime=${exec.scenario.startTime}&vuId=${exec.vu.idInTest}&itemId=${randomIntBetween(1, 10000)}`
+}
+
+function getRandomNumberExcludingOne(excludeNumber) {
+  let randomNumber;
+  do {
+    randomNumber = Math.floor(Math.random() * 10) + 1;
+  } while (randomNumber === excludeNumber);
+  return randomNumber;
 }

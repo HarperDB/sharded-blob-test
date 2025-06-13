@@ -6,7 +6,7 @@ import exec from 'k6/execution';
 import { SharedArray } from "k6/data";
 import { textSummary } from 'https://jslib.k6.io/k6-summary/0.0.2/index.js';
 
-const data = new SharedArray("1M records", function() { return JSON.parse(open('../data/1MRecords.json')); });
+const data = new SharedArray("1M records", function() { return JSON.parse(open('../data/records.json')); });
 
 let trendHDB = new Trend("trendHDB", true);
 let trendCacheMiss = new Trend("trendCacheMiss", true);
@@ -21,11 +21,11 @@ const DURATION = __ENV.DURATION ? __ENV.DURATION : '10m';
 
 const HEADERS = {Accept: "*/*", Authorization: BASIC_AUTH, 'Cache-Control': 'only-if-cached'}
 
-const MAX_VUS = 10000;
+const MAX_VUS = 90000;
 
 const STAGES = [
-  { target: TARGET, duration: '1m' },
-  //{ target: TARGET, duration: DURATION }
+  { target: TARGET, duration: '10m' },
+  { target: TARGET, duration: DURATION }
 ];
 
 export let options = {
@@ -55,8 +55,8 @@ function callHDB(domain) {
   const matchId = id.match(/itemId=([\d.]+)/);
   const shardNumber = (matchId[1] % 10) +1;
   //determine appropriate shard number
-console.log(id, shardNumber);
-const num = shardNumber < 10 ? '0' + shardNumber : shardNumber;
+  //console.log(id, shardNumber);
+  const num = shardNumber < 10 ? '0' + shardNumber : shardNumber;
   let request_url = `${domain.replace('{SN}', num)}:${HTTP_PORT}/shardnado/${id}`;
 
   const res = http.get(request_url, { headers: HEADERS,
