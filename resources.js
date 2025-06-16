@@ -2,8 +2,8 @@ import { randomBytes } from 'crypto';
 
 const TTL = 4 * 30 * 24 * 60 * 60 * 1000;
 
-const minSize = 800;
-const maxSize = 1300;
+const minSize = 150000;
+const maxSize = 215000;
 let random = randomBytes(maxSize);
 
 const noOfHarperNodes = 10;        //cluster has 10 harperdb nodes (shard 1, 2 ... 10)
