@@ -63,3 +63,21 @@ type ByteData @table(database: "shard", expiration: 604800) @sealed @export{
 
 	httpStatus: Int
 }
+
+type ItemAttributes @table @export {
+  cacheKey: ID! @primaryKey
+  currentPrice: String
+  wasPrice: String
+  unitPrice: String
+  title: String
+  imageUrl: String
+  brand: String
+  availabilityStatus: String
+  twoDayShipping: Boolean
+
+  ttl: Int
+
+  updatedTimestamp: String!
+
+  shardNumber: Int
+}
