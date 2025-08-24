@@ -187,11 +187,11 @@ export function htmlTagsExistOptimized(attribute) {
 // This function sanitizes an array of JSON objects
 // by removing any objects that contain HTML tags in their attributes.
 // Used for update operations where entries are JSON objects.
- export async function sanitizeJsonInputOptimized(jsonArray) {
+ export  function sanitizeJsonInputOptimized(jsonArray) {
 	const sanitizedArray = [];
 	const filteredOutArray = [];
 	for (const jsonObj of jsonArray) {
-		await new Promise(setImmediate);
+		//await new Promise(setImmediate);
 		let hasHtmlTags = false;
 		for (const key in jsonObj) {
 			if (htmlTagsExistOptimized(jsonObj[key])) {
@@ -225,6 +225,7 @@ export class itemattributes extends Resource {
 			const entry = sanitizedPayload[i];
 
 			let validationErrors = validateEachEntryAndGetError(entry);
+			console.log(validationErrors);
 			if (validationErrors.length === 0) {
 				// Step 3.2: Circular buffer of 500 promises to limit concurrency
 				// This ensures that we do not overwhelm the database with too many concurrent requests
