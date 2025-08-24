@@ -233,7 +233,7 @@ export class itemattributes extends Resource {
 
 				const shardNumber = shardResidency(entry.cacheKey);
 
-				promises[i % 500] = ItemAttributes.patch(
+				promises[i % 500] = ItemAttributes.put(
 					{
 						...entry,
 						ttl: DEFAULT_TTL_IN_SEC,
