@@ -167,6 +167,47 @@ export const validateEachEntryAndGetError = (item) => {
 	return errors;
 };
 
+// Singleton JSDOM window and DOMPurify instance
+let globalWindow, globalPurify;
+function initializeGlobalSanitizer() {
+	if (!globalWindow) {
+		globalWindow = new JSDOM("").window;
+		globalPurify = DOMPurify(globalWindow);
+	}
+}
+
+export function htmlTagsExistOptimized(attribute) {
+	if (typeof attribute !== "string") return false;
+	initializeGlobalSanitizer();
+	// Remove all tags, not just dangerous ones
+	const clean = globalPurify.sanitize(attribute, { ALLOWED_TAGS: [] });
+	return clean !== attribute;
+}
+
+// This function sanitizes an array of JSON objects
+// by removing any objects that contain HTML tags in their attributes.
+// Used for update operations where entries are JSON objects.
+ export async function sanitizeJsonInputOptimized(jsonArray) {
+	const sanitizedArray = [];
+	const filteredOutArray = [];
+	for (const jsonObj of jsonArray) {
+		await new Promise(setImmediate);
+		let hasHtmlTags = false;
+		for (const key in jsonObj) {
+			if (htmlTagsExistOptimized(jsonObj[key])) {
+				hasHtmlTags = true;
+				break;
+			}
+		}
+		if (hasHtmlTags) {
+			filteredOutArray.push(jsonObj);
+		} else {
+			sanitizedArray.push(jsonObj);
+		}
+	}
+	return { sanitizedArray, filteredOutArray };
+}
+
 export class itemattributes extends Resource {
 	async post(payload) {
 		const invalidEntries = [];
@@ -174,7 +215,7 @@ export class itemattributes extends Resource {
 		const {
 			sanitizedArray: sanitizedPayload,
 			filteredOutArray: excludedEntries,
-		} = await sanitizeJsonInput(payload);
+		} = await sanitizeJsonInputOptimized(payload);
 
 		// Step 3: Process the sanitized payload
 		const totalEntries = sanitizedPayload.length;

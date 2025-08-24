@@ -1,7 +1,7 @@
 {
   "type": "module",
   "name": "sharded-blob-test",
-  "version": "1.0.13-setResidencyById-ItemAttributes",
+  "version": "1.0.14-setResidencyById-ItemAttributes",
   "description": "",
   "main": "resources.js",
   "scripts": {
