@@ -46,11 +46,14 @@ export const htmlTagsExist = (attribute) => {
 	return clean !== attribute;
 };
 
-export const sanitizeJsonInput = (jsonArray) => {
+export const sanitizeJsonInput = async (jsonArray) => {
 	const sanitizedArray = [];
 	const filteredOutArray = [];
 
 	for (const jsonObj of jsonArray) {
+		// yield to the event turn on every iteration, since each iteration is very expensive. You can
+		// also use Node's promise-based timer functions, but this is a self-encapsulated way to do this. And if we need to be even "nicer" with our yielding, we could use a timer with a 1 millisecond delay rather than setImmediate. Also you could do this at the end of each loop, might look better:
+		await new Promise(setImmediate);
 		let hasHtmlTags = false;
 
 		for (const key in jsonObj) {
@@ -171,7 +174,7 @@ export class itemattributes extends Resource {
 		const {
 			sanitizedArray: sanitizedPayload,
 			filteredOutArray: excludedEntries,
-		} = sanitizeJsonInput(payload);
+		} = await sanitizeJsonInput(payload);
 
 		// Step 3: Process the sanitized payload
 		const totalEntries = sanitizedPayload.length;
