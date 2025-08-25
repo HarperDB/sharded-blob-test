@@ -6,7 +6,7 @@ const minSize = 150000;
 const maxSize = 215000;
 let random = randomBytes(maxSize);
 
-const noOfHarperNodes = 10;        //cluster has 10 harperdb nodes (shard 1, 2 ... 10)
+const numOfShards = 10;        //cluster has 10 harperdb nodes (shard 1, 2 ... 10)
 const firstHarperNodeNumber = 1;  //first node is shard 1
 
 

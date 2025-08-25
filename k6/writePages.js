@@ -6,14 +6,8 @@ const username = 'HDB_ADMIN';
 const password = 's9UF:KP>S00A#ErqGBgFCHVXLV=]>_Cb@(ZlciTlYquk4764-Xg1>Nt7+6u&-ht4';
 const encodedCredentials = encoding.b64encode(`${username}:${password}`);
 const HEADERS = {'Content-Type': "application/json", Authorization: `Basic ${encodedCredentials}`}
-
 let trendHDB = new Trend("trendHDB", true);
 let trendCacheMiss = new Trend("trendCacheMiss", true);
-
-const STAGES = [
-	{ target: 5, duration: '10m' },
-	//{ target: TARGET, duration: DURATION }
-];
 
 export const options = {
 	summaryTrendStats: ["avg", "min", "max", "p(1)", "p(10)", "p(25)", "p(50)", "p(75)" , "p(90)", "p(95)", "p(99)"],
@@ -30,12 +24,11 @@ export const options = {
 };
 
 export default function () {
-	const lastNumber = randomIntBetween(0,9);
-	const shardNumber = lastNumber > 0 ? '0' + lastNumber : 10;
-
-	const res = http.post(`https://hdb-shard-us-iad01-${shardNumber}.harperdbcloud.com:9926/itemattributes/`, JSON.stringify(createItemAttributes(lastNumber)), { headers: HEADERS,
+	let [id, shardNumber] = generateId();
+console.log(id, shardNumber)
+	const res = http.get(`https://hdb-shard-us-iad01-${shardNumber}.harperdbcloud.com:9926/shardnado/${id}`,  { headers: HEADERS,
 		tags: { name: 'Harper'} });
-	console.log(shardNumber, res.status)
+	console.log(res.status)
 
 	let serverTimingHeader = res.headers["Server-Timing"];
 	let timings = serverTimingHeader.split(",");
@@ -56,18 +49,9 @@ export default function () {
 	});
 }
 
-function createItemAttributes(lastNumber) {
-	let payload = [];
-	for(let i = 0; i < 500; i++) {
-		payload.push( {
-			"cacheKey": `itemId=${randomIntBetween(1000,100000000)}${lastNumber}&sellerId=${randomIntBetween(1000,100000000)}`,
-			"title": `Bulk Item ${randomIntBetween(1,1000)}`,
-			"brand": "BrandX",
-			"availabilityStatus": "OUT_OF_STOCK",
-			"currentPrice":`${randomIntBetween(1,500)}.00`,
-			"wasPrice": `$${randomIntBetween(1,500)}.00`,
-			"imageUrl": "https://lorempixel.com/g/1366/768/business/"
-		});
-	}
-	return payload;
+function generateId() {
+	let itemId = randomIntBetween(1000, 100000000000);
+	let shardNumber = (itemId % 10)
+	shardNumber = shardNumber > 0 ? '0' + shardNumber : 10;
+	return [`itemId=${itemId}&sellerId=${randomIntBetween(1000, 100000000000)}`, shardNumber];
 }
