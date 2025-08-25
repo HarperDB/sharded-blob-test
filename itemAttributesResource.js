@@ -225,7 +225,7 @@ export class itemattributes extends Resource {
 			const entry = sanitizedPayload[i];
 
 			let validationErrors = validateEachEntryAndGetError(entry);
-			console.log(validationErrors);
+
 			if (validationErrors.length === 0) {
 				// Step 3.2: Circular buffer of 500 promises to limit concurrency
 				// This ensures that we do not overwhelm the database with too many concurrent requests

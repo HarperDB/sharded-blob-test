@@ -12,6 +12,27 @@ const firstHarperNodeNumber = 1;  //first node is shard 1
 
 const {Shardnado, BlobData, ByteData} = databases.shard;
 
+export function shardResidency(cacheKey) {
+  const params = new URLSearchParams(cacheKey);
+  const itemId = params.get("itemId");
+  const lastChar = itemId ? itemId[itemId.length - 1] : undefined;
+  if (!itemId || !lastChar) {
+    return numOfShards; // fallback shard number if itemId is missing or empty
+  }
+  if (/\d/.test(lastChar)) {
+    // Check if the last character is a digit
+    if (lastChar === "0") {
+      // If the last character is '0', we assign it to the last shard
+      return numOfShards;
+    }
+    // Convert lastChar to number for modulo operation, then make 1-based
+    const shardNum = ((Number(lastChar) - 1) % numOfShards) + 1;
+    return shardNum;
+  }
+  return numOfShards; // If the last character is not a digit, we assign it to the last shard
+}
+
+
 //sample id: itemId=10052100863&deviceType=desktop&upstream=www.walmart.com
 /**
  * Extracts the item ID from the `cacheKey` in the provided record and calculates a partition value
@@ -22,9 +43,8 @@ const {Shardnado, BlobData, ByteData} = databases.shard;
  * @returns {number} The partition value derived from the last digit of the item ID.
  */
 
-Shardnado.setResidency((record ) => {
-  let matchId = record.cacheKey.match(/itemId=([\d.]+)/);
-  return (matchId[1] % noOfHarperNodes) + firstHarperNodeNumber;
+Shardnado.setResidencyById((cacheKey) => {
+  return shardResidency(cacheKey);
 });
 
 /*Shardnado.setResidencyById((id ) => {
